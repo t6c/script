@@ -1,7 +1,7 @@
 --[[
-Custom proximityprompt by Sowd
-Tween by Nahida
-code is super cringe btw
+	Custom proximityprompt by Sowd
+	Tween by Nahida
+	code is super cringe btw
 ]]
 
 local RunService = game:GetService("RunService");
@@ -10,7 +10,7 @@ local Player = Players.LocalPlayer;
 local chr = Player.Character
 local root = chr.HumanoidRootPart
 
-local TeleportSpeed = getgenv().speed or 250;
+local TeleportSpeed = speed or 250;
 local NextFrame = RunService.Heartbeat;
 
 local function fireproximityprompt(ProximityPrompt, Amount, Skip)
@@ -82,17 +82,17 @@ end
 spawn(function()
 	while task.wait() do
 		pcall(function()
-			if getgenv().enabled then
+			if TP then
 				repeat
 					task.wait()
 					ImprovedTeleport(getFlower().WorldPivot.Position)
-					wait(getgenv().delay or 1)
+					task.wait(delay)
 					for i, v in next, getFlower():GetDescendants() do
 						if v:IsA("ProximityPrompt") then
 							fireproximityprompt(v, 1, true)
 						end
 					end
-				until not getFlower() or not getgenv().enabled
+				until not getFlower() or not TP
 			end
 		end)
 	end
