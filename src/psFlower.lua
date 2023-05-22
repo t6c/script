@@ -4,10 +4,6 @@ Tween by Nahida
 code is super cringe btw
 ]]
 
-getgenv().enabled = true
-getgenv().speed = 300
-getgenv().delay = 1 --u can do lower but it might bug
-
 local RunService = game:GetService("RunService");
 local Players = game:GetService("Players");
 local Player = Players.LocalPlayer;
@@ -96,7 +92,7 @@ spawn(function()
 							fireproximityprompt(v, 1, true)
 						end
 					end
-				until not getFlower() or not TP
+				until not getFlower() or not getgenv().enabled
 			end
 		end)
 	end
