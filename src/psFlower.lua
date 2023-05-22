@@ -4,6 +4,8 @@
 	code is super cringe btw
 ]]
 
+
+
 local RunService = game:GetService("RunService");
 local Players = game:GetService("Players");
 local Player = Players.LocalPlayer;
@@ -97,3 +99,11 @@ spawn(function()
 		end)
 	end
 end)
+
+task.wait()
+game.StarterGui:SetCore("SendNotification", {
+	Title = "time#3167"; 
+	Text = "REJOIN IF THE YOU CAN'T COLLECT FLOWERS"; 
+	Icon = "";
+	Duration = 60;
+})
