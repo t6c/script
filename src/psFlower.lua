@@ -4,6 +4,10 @@ Tween by Nahida
 code is super cringe btw
 ]]
 
+getgenv().enabled = true
+getgenv().speed = 300
+getgenv().delay = 1 --u can do lower but it might bug
+
 local RunService = game:GetService("RunService");
 local Players = game:GetService("Players");
 local Player = Players.LocalPlayer;
@@ -14,26 +18,24 @@ local TeleportSpeed = getgenv().speed or 250;
 local NextFrame = RunService.Heartbeat;
 
 local function fireproximityprompt(ProximityPrompt, Amount, Skip)
-    assert(ProximityPrompt, "Argument #1 Missing or nil")
-    assert(typeof(ProximityPrompt) == "Instance" and ProximityPrompt:IsA("ProximityPrompt"), "Attempted to fire a Value that is not a ProximityPrompt")
-
-    local HoldDuration = ProximityPrompt.HoldDuration
-    if Skip then
-        ProximityPrompt.HoldDuration = 0
-    end
-
-    for i = 1, Amount or 1 do
-        ProximityPrompt:InputHoldBegin()
-        if Skip then
-            local RunService = game:GetService("RunService")
-            local Start = time()
-            repeat
-                RunService.Heartbeat:Wait(0.1)
-            until time() - Start > HoldDuration
-        end
-        ProximityPrompt:InputHoldEnd()
-    end
-    ProximityPrompt.HoldDuration = HoldDuration
+	assert(ProximityPrompt, "Argument #1 Missing or nil")
+	assert(typeof(ProximityPrompt) == "Instance" and ProximityPrompt:IsA("ProximityPrompt"), "Attempted to fire a Value that is not a ProximityPrompt")
+	local HoldDuration = ProximityPrompt.HoldDuration
+	if Skip then
+		ProximityPrompt.HoldDuration = 0
+	end
+	for i = 1, Amount or 1 do
+		ProximityPrompt:InputHoldBegin()
+		if Skip then
+			local RunService = game:GetService("RunService")
+			local Start = time()
+			repeat
+				RunService.Heartbeat:Wait(0.1)
+			until time() - Start > HoldDuration
+		end
+		ProximityPrompt:InputHoldEnd()
+	end
+	ProximityPrompt.HoldDuration = HoldDuration
 end
 
 local function ImprovedTeleport(Target)
@@ -85,15 +87,16 @@ spawn(function()
 	while task.wait() do
 		pcall(function()
 			if getgenv().enabled then
-				repeat task.wait()
-                    ImprovedTeleport(getFlower().WorldPivot.Position)
-				    wait(getgenv().delay or 1)
-				    for i,v in next, getFlower():GetDescendants() do
-                        if v:IsA("ProximityPrompt") then
-                            fireproximityprompt(v, 1, true)
-                        end
-                    end
-                until not getFlower() or not TP
+				repeat
+					task.wait()
+					ImprovedTeleport(getFlower().WorldPivot.Position)
+					wait(getgenv().delay or 1)
+					for i, v in next, getFlower():GetDescendants() do
+						if v:IsA("ProximityPrompt") then
+							fireproximityprompt(v, 1, true)
+						end
+					end
+				until not getFlower() or not TP
 			end
 		end)
 	end
