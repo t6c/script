@@ -1,24 +1,44 @@
 local httpService = game:GetService('HttpService')
 local httprequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
 local getassetfunc = getcustomasset or getsynasset
-local ThemeManager = {} do
+local ThemeManager = {}
+do
 	ThemeManager.Folder = 'LinoriaLibSettings'
 	-- if not isfolder(ThemeManager.Folder) then makefolder(ThemeManager.Folder) end
 
 	ThemeManager.Library = nil
 	ThemeManager.BuiltInThemes = {
-		['Default'] 		= { 1, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1c1c1c","AccentColor":"6741d9","BackgroundColor":"1c1c1c","OutlineColor":"343a40"}') }
+		['Default'] 		= {
+			1,
+			httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1c1c1c","AccentColor":"6741d9","BackgroundColor":"1c1c1c","OutlineColor":"343a40"}')
+		},
+		['Linoria Default'] = {
+			2,
+			httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1c1c1c","AccentColor":"0055ff","BackgroundColor":"141414","OutlineColor":"323232"}')
+		}
 	}
 
 	function ApplyBackgroundVideo(webmLink)
-		if writefile == nil then return end;if readfile == nil then return end;if isfile == nil then return end
-		if ThemeManager.Library == nil then return end
-		if ThemeManager.Library.InnerVideoBackground == nil then return end
+		if writefile == nil then
+			return
+		end;
+		if readfile == nil then
+			return
+		end;
+		if isfile == nil then
+			return
+		end
+		if ThemeManager.Library == nil then
+			return
+		end
+		if ThemeManager.Library.InnerVideoBackground == nil then
+			return
+		end
 
 		if string.sub(tostring(webmLink), -5) == ".webm" then
 			local CurrentSaved = ""
 			if isfile(ThemeManager.Folder .. '/themes/currentVideoLink.txt') then
-				 CurrentSaved = readfile(ThemeManager.Folder .. '/themes/currentVideoLink.txt')
+				CurrentSaved = readfile(ThemeManager.Folder .. '/themes/currentVideoLink.txt')
 			end
 			local VideoData = nil;
 			if CurrentSaved == tostring(webmLink) then
@@ -52,7 +72,9 @@ local ThemeManager = {} do
 		local customThemeData = self:GetCustomTheme(theme)
 		local data = customThemeData or self.BuiltInThemes[theme]
 
-		if not data then return end
+		if not data then
+			return
+		end
 
 		-- custom themes are just regular dictionaries instead of an array with { index, dictionary }
 		if self.Library.InnerVideoBackground ~= nil then
@@ -87,7 +109,14 @@ local ThemeManager = {} do
 			self.Library.InnerVideoBackground.Visible = false
 		end
 		
-		local options = { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor", "VideoLink" }
+		local options = {
+			"FontColor",
+			"MainColor",
+			"AccentColor",
+			"BackgroundColor",
+			"OutlineColor",
+			"VideoLink"
+		}
 		for i, field in next, options do
 			if Options and Options[field] then
 				self.Library[field] = Options[field].Value
@@ -114,7 +143,7 @@ local ThemeManager = {} do
 				isDefault = false;
 			end
 		elseif self.BuiltInThemes[self.DefaultTheme] then
-		 	theme = self.DefaultTheme
+			theme = self.DefaultTheme
 		end
 
 		if isDefault then
@@ -134,32 +163,55 @@ local ThemeManager = {} do
 		end
 		
 		local file = self.Folder .. '/themes/' .. name .. '.json'
-		if not isfile(file) then return false, 'invalid file' end
+		if not isfile(file) then
+			return false, 'invalid file'
+		end
 
 		local success, decoded = pcall(delfile, file)
-		if not success then return false, 'delete file error' end
+		if not success then
+			return false, 'delete file error'
+		end
 		
 		return true
 	end
 	
 	function ThemeManager:CreateThemeManager(groupbox)
-		groupbox:AddLabel('Background color'):AddColorPicker('BackgroundColor', { Default = self.Library.BackgroundColor });
-		groupbox:AddLabel('Main color')	:AddColorPicker('MainColor', { Default = self.Library.MainColor });
-		groupbox:AddLabel('Accent color'):AddColorPicker('AccentColor', { Default = self.Library.AccentColor });
-		groupbox:AddLabel('Outline color'):AddColorPicker('OutlineColor', { Default = self.Library.OutlineColor });
-		groupbox:AddLabel('Font color')	:AddColorPicker('FontColor', { Default = self.Library.FontColor });
-		groupbox:AddInput('VideoLink', { Text = '.webm Video Background (Link)', Default = self.Library.VideoLink });
+		groupbox:AddLabel('Background color'):AddColorPicker('BackgroundColor', {
+			Default = self.Library.BackgroundColor
+		});
+		groupbox:AddLabel('Main color')	:AddColorPicker('MainColor', {
+			Default = self.Library.MainColor
+		});
+		groupbox:AddLabel('Accent color'):AddColorPicker('AccentColor', {
+			Default = self.Library.AccentColor
+		});
+		groupbox:AddLabel('Outline color'):AddColorPicker('OutlineColor', {
+			Default = self.Library.OutlineColor
+		});
+		groupbox:AddLabel('Font color')	:AddColorPicker('FontColor', {
+			Default = self.Library.FontColor
+		});
+		groupbox:AddInput('VideoLink', {
+			Text = '.webm Video Background (Link)',
+			Default = self.Library.VideoLink
+		});
 		
 		local ThemesArray = {}
 		for Name, Theme in next, self.BuiltInThemes do
 			table.insert(ThemesArray, Name)
 		end
 
-		table.sort(ThemesArray, function(a, b) return self.BuiltInThemes[a][1] < self.BuiltInThemes[b][1] end)
+		table.sort(ThemesArray, function(a, b)
+			return self.BuiltInThemes[a][1] < self.BuiltInThemes[b][1]
+		end)
 
 		groupbox:AddDivider()
 
-		groupbox:AddDropdown('ThemeManager_ThemeList', { Text = 'Theme list', Values = ThemesArray, Default = 1 })
+		groupbox:AddDropdown('ThemeManager_ThemeList', {
+			Text = 'Theme list',
+			Values = ThemesArray,
+			Default = 1
+		})
 		groupbox:AddButton('Set as default', function()
 			self:SaveDefault(Options.ThemeManager_ThemeList.Value)
 			self.Library:Notify(string.format('Set default theme to %q', Options.ThemeManager_ThemeList.Value))
@@ -171,7 +223,9 @@ local ThemeManager = {} do
 
 		groupbox:AddDivider()
 
-		groupbox:AddInput('ThemeManager_CustomThemeName', { Text = 'Custom theme name' })
+		groupbox:AddInput('ThemeManager_CustomThemeName', {
+			Text = 'Custom theme name'
+		})
 		groupbox:AddButton('Create theme', function() 
 			self:SaveCustomTheme(Options.ThemeManager_CustomThemeName.Value)
 
@@ -181,7 +235,12 @@ local ThemeManager = {} do
 
 		groupbox:AddDivider()
 
-		groupbox:AddDropdown('ThemeManager_CustomThemeList', { Text = 'Custom themes', Values = self:ReloadCustomThemes(), AllowNull = true, Default = 1 })
+		groupbox:AddDropdown('ThemeManager_CustomThemeList', {
+			Text = 'Custom themes',
+			Values = self:ReloadCustomThemes(),
+			AllowNull = true,
+			Default = 1
+		})
 		groupbox:AddButton('Load theme', function() 
 			self:ApplyTheme(Options.ThemeManager_CustomThemeList.Value) 
 		end)
@@ -256,7 +315,14 @@ local ThemeManager = {} do
 		end
 
 		local theme = {}
-		local fields = { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor", "VideoLink" }
+		local fields = {
+			"FontColor",
+			"MainColor",
+			"AccentColor",
+			"BackgroundColor",
+			"OutlineColor",
+			"VideoLink"
+		}
 
 		for _, field in next, fields do
 			if field == "VideoLink" then
