@@ -1,22 +1,12 @@
---discord.gg/boronide, code generated using luamin.js™
-
-
-
-
 local httpService = game:GetService('HttpService')
 
-local SaveManager = {}
-do
+local SaveManager = {} do
 	SaveManager.Folder = 'LinoriaLibSettings'
 	SaveManager.Ignore = {}
 	SaveManager.Parser = {
 		Toggle = {
 			Save = function(idx, object) 
-				return {
-					type = 'Toggle',
-					idx = idx,
-					value = object.Value
-				} 
+				return { type = 'Toggle', idx = idx, value = object.Value } 
 			end,
 			Load = function(idx, data)
 				if Toggles[idx] then 
@@ -26,11 +16,7 @@ do
 		},
 		Slider = {
 			Save = function(idx, object)
-				return {
-					type = 'Slider',
-					idx = idx,
-					value = tostring(object.Value)
-				}
+				return { type = 'Slider', idx = idx, value = tostring(object.Value) }
 			end,
 			Load = function(idx, data)
 				if Options[idx] then 
@@ -40,12 +26,7 @@ do
 		},
 		Dropdown = {
 			Save = function(idx, object)
-				return {
-					type = 'Dropdown',
-					idx = idx,
-					value = object.Value,
-					mutli = object.Multi
-				}
+				return { type = 'Dropdown', idx = idx, value = object.Value, mutli = object.Multi }
 			end,
 			Load = function(idx, data)
 				if Options[idx] then 
@@ -55,12 +36,7 @@ do
 		},
 		ColorPicker = {
 			Save = function(idx, object)
-				return {
-					type = 'ColorPicker',
-					idx = idx,
-					value = object.Value:ToHex(),
-					transparency = object.Transparency
-				}
+				return { type = 'ColorPicker', idx = idx, value = object.Value:ToHex(), transparency = object.Transparency }
 			end,
 			Load = function(idx, data)
 				if Options[idx] then 
@@ -70,30 +46,18 @@ do
 		},
 		KeyPicker = {
 			Save = function(idx, object)
-				return {
-					type = 'KeyPicker',
-					idx = idx,
-					mode = object.Mode,
-					key = object.Value
-				}
+				return { type = 'KeyPicker', idx = idx, mode = object.Mode, key = object.Value }
 			end,
 			Load = function(idx, data)
 				if Options[idx] then 
-					Options[idx]:SetValue({
-						data.key,
-						data.mode
-					})
+					Options[idx]:SetValue({ data.key, data.mode })
 				end
 			end,
 		},
 
 		Input = {
 			Save = function(idx, object)
-				return {
-					type = 'Input',
-					idx = idx,
-					text = object.Value
-				}
+				return { type = 'Input', idx = idx, text = object.Value }
 			end,
 			Load = function(idx, data)
 				if Options[idx] and type(data.text) == 'string' then
@@ -126,20 +90,14 @@ do
 		}
 
 		for idx, toggle in next, Toggles do
-			if self.Ignore[idx] then
-				continue
-			end
+			if self.Ignore[idx] then continue end
 
 			table.insert(data.objects, self.Parser[toggle.Type].Save(idx, toggle))
 		end
 
 		for idx, option in next, Options do
-			if not self.Parser[option.Type] then
-				continue
-			end
-			if self.Ignore[idx] then
-				continue
-			end
+			if not self.Parser[option.Type] then continue end
+			if self.Ignore[idx] then continue end
 
 			table.insert(data.objects, self.Parser[option.Type].Save(idx, option))
 		end	
@@ -159,20 +117,14 @@ do
 		end
 		
 		local file = self.Folder .. '/settings/' .. name .. '.json'
-		if not isfile(file) then
-			return false, 'invalid file'
-		end
+		if not isfile(file) then return false, 'invalid file' end
 
 		local success, decoded = pcall(httpService.JSONDecode, httpService, readfile(file))
-		if not success then
-			return false, 'decode error'
-		end
+		if not success then return false, 'decode error' end
 
 		for _, option in next, decoded.objects do
 			if self.Parser[option.type] then
-				task.spawn(function()
-					self.Parser[option.type].Load(option.idx, option)
-				end) -- task.spawn() so the config loading wont get stuck.
+				task.spawn(function() self.Parser[option.type].Load(option.idx, option) end) -- task.spawn() so the config loading wont get stuck.
 			end
 		end
 
@@ -185,28 +137,18 @@ do
 		end
 		
 		local file = self.Folder .. '/settings/' .. name .. '.json'
-		if not isfile(file) then
-			return false, 'invalid file'
-		end
+		if not isfile(file) then return false, 'invalid file' end
 
 		local success, decoded = pcall(delfile, file)
-		if not success then
-			return false, 'delete file error'
-		end
+		if not success then return false, 'delete file error' end
 		
 		return true
 	end
 
 	function SaveManager:IgnoreThemeSettings()
 		self:SetIgnoreIndexes({ 
-			"BackgroundColor",
-			"MainColor",
-			"AccentColor",
-			"OutlineColor",
-			"FontColor", -- themes
-			"ThemeManager_ThemeList",
-			'ThemeManager_CustomThemeList',
-			'ThemeManager_CustomThemeName', -- themes
+			"BackgroundColor", "MainColor", "AccentColor", "OutlineColor", "FontColor", -- themes
+			"ThemeManager_ThemeList", 'ThemeManager_CustomThemeList', 'ThemeManager_CustomThemeName', -- themes
 			"VideoLink",
 		})
 	end
@@ -276,9 +218,7 @@ do
 
 		local section = tab:AddLeftGroupbox('Configuration')
 
-		section:AddInput('SaveManager_ConfigName',    {
-			Text = 'Config name'
-		})
+		section:AddInput('SaveManager_ConfigName',    { Text = 'Config name' })
 		section:AddButton('Create config', function()
 			local name = Options.SaveManager_ConfigName.Value
 
@@ -299,11 +239,7 @@ do
 
 		section:AddDivider()
 
-		section:AddDropdown('SaveManager_ConfigList', {
-			Text = 'Config list',
-			Values = self:RefreshConfigList(),
-			AllowNull = true
-		})
+		section:AddDropdown('SaveManager_ConfigList', { Text = 'Config list', Values = self:RefreshConfigList(), AllowNull = true })
 		section:AddButton('Load config', function()
 			local name = Options.SaveManager_ConfigList.Value
 
@@ -366,10 +302,7 @@ do
 			SaveManager.AutoloadLabel:SetText('Current autoload config: ' .. name)
 		end
 
-		SaveManager:SetIgnoreIndexes({
-			'SaveManager_ConfigList',
-			'SaveManager_ConfigName'
-		})
+		SaveManager:SetIgnoreIndexes({ 'SaveManager_ConfigList', 'SaveManager_ConfigName' })
 	end
 
 	SaveManager:BuildFolderTree()
